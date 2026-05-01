@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Талон {{ appointment.ticket_number }}{% endblock %}
+
+{% block content %}
+<section class="container confirmation-layout">
+    <article class="ticket-card">
+        <h1>{{ t.confirmation_title }}</h1>
+        <div class="ticket-number">{{ appointment.ticket_number }}</div>
+        <div class="notice-card">
+            <h2>{{ t.client_notice_title }}</h2>
+            <p>{{ t.client_notice_intro }}</p>
+            <p>{{ t.client_notice_booking }}</p>
+            <ul>
+                <li>{{ t.client_notice_arrive }}</li>
+                <li>{{ t.client_notice_document }}</li>
+            </ul>
+        </div>
+        <dl class="detail-list">
+            <div>
+                <dt>{{ t.service }}</dt>
+                <dd>{{ appointment.service.name }}</dd>
+            </div>
+            <div>
+                <dt>{{ t.date_time }}</dt>
+                <dd>{{ appointment.date|date_ru }}, {{ appointment.time_slot.start_time }}</dd>
+            </div>
+            <div>
+                <dt>{{ t.citizen }}</dt>
+                <dd>{{ appointment.full_name }}</dd>
+            </div>
+            <div>
+                <dt>{{ t.status }}</dt>
+                <dd><span class="status status-{{ appointment.status }}">{{ appointment.status_label }}</span></dd>
+            </div>
+        </dl>
+        <div class="form-actions">
+            <a class="button primary" href="/status?ticket={{ appointment.ticket_number }}">{{ t.check_status }}</a>
+            <a class="button secondary" href="/ticket/{{ appointment.ticket_number }}">{{ t.download_pdf }}</a>
+            <a class="button secondary" href="/appointments/{{ appointment.id }}/reschedule">{{ t.reschedule }}</a>
+            <a class="button ghost" href="/">{{ t.new_appointment }}</a>
+        </div>
+    </article>
+</section>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Личный кабинет{% endblock %}
+
+{% block content %}
+<section class="container page-head">
+    <div>
+        <h1>{{ current_user.full_name }}</h1>
+        <p class="page-lead">
+            {% if current_user.iin %}ИИН: {{ current_user.iin }} · {% endif %}
+            {% if current_user.phone %}Телефон: {{ current_user.phone }}{% endif %}
+            {% if current_user.phone and current_user.email %} · {% endif %}
+            {% if current_user.email %}Email: {{ current_user.email }}{% endif %}
+        </p>
+    </div>
+    <a class="button primary" href="/">{{ t.book }}</a>
+</section>
+
+<section class="container table-section">
+    <div class="section-heading">
+        <h2>{{ t.cabinet_appointments }}</h2>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>{{ t.appointment_date }}</th>
+                    <th>{{ t.ticket }}</th>
+                    <th>{{ t.service }}</th>
+                    <th>{{ t.status }}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.date|date_ru }} {{ appointment.time_slot.start_time }}</td>
+                        <td><strong>{{ appointment.ticket_number }}</strong></td>
+                        <td>{{ appointment.service.name }}</td>
+                        <td><span class="status status-{{ appointment.status }}">{{ appointment.status_label }}</span></td>
+                        <td>
+                            <div class="table-actions">
+                                <a class="button small secondary" href="/status?ticket={{ appointment.ticket_number }}">{{ t.check }}</a>
+                                <a class="button small secondary" href="/ticket/{{ appointment.ticket_number }}">PDF</a>
+                                <a class="button small secondary" href="/appointments/{{ appointment.id }}/reschedule">{{ t.reschedule }}</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="empty-cell">{{ t.no_appointments }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

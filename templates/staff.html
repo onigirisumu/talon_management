@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Панель сотрудника{% endblock %}
+
+{% block content %}
+<section class="container page-head">
+    <div>
+        <h1>Записи на день</h1>
+    </div>
+    <form class="compact-filter" method="get" action="/staff">
+        <input type="date" name="selected_date" value="{{ selected_date }}">
+        <button type="submit">Открыть</button>
+    </form>
+</section>
+
+<section class="container table-section">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Время</th>
+                    <th>Талон</th>
+                    <th>Услуга</th>
+                    <th>Гражданин</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.time_slot.start_time }}</td>
+                        <td><strong>{{ appointment.ticket_number }}</strong></td>
+                        <td>{{ appointment.service.name }}</td>
+                        <td>
+                            <strong>{{ appointment.full_name }}</strong>
+                            <small>{{ appointment.iin }} · {{ appointment.phone }}</small>
+                        </td>
+                        <td><span class="status status-{{ appointment.status }}">{{ appointment.status_label }}</span></td>
+                        <td>
+                            <form class="status-form" method="post" action="/staff/{{ appointment.id }}/status">
+                                <input type="hidden" name="selected_date" value="{{ selected_date }}">
+                                <select name="status">
+                                    {% for value, label in status_choices %}
+                                        <option value="{{ value }}" {% if appointment.status == value %}selected{% endif %}>{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                                <input name="note" type="text">
+                                <button type="submit">Сохранить</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="empty-cell">На выбранную дату записей нет.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

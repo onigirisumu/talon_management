@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.nav_services }} | {{ t.brand }}{% endblock %}
+
+{% block content %}
+<section class="hero-band">
+    <div class="container hero-layout">
+        <div class="hero-copy">
+            <h1>{{ t.hero_title }}</h1>
+            <p class="lead">{{ t.hero_lead }}</p>
+            <div class="hero-actions">
+                <a class="button primary" href="#services">{{ t.choose_service }}</a>
+                <a class="button secondary" href="{% if current_user and current_user.role == 'citizen' %}/cabinet{% else %}/login{% endif %}">{{ t.nav_cabinet }}</a>
+                <a class="button secondary" href="/status">{{ t.nav_status }}</a>
+            </div>
+        </div>
+        <aside class="stats-panel" aria-label="Статистика записи">
+            <div class="stat-item">
+                <span class="stat-value">{{ services_count }}</span>
+                <span class="stat-label">{{ t.active_services }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ available_slots }}</span>
+                <span class="stat-label">{{ t.available_slots }}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ appointments_today }}</span>
+                <span class="stat-label">{{ t.appointments_today }}</span>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<section id="services" class="container section-block">
+    <div class="section-heading">
+        <div>
+            <h2>{{ t.choose_service }}</h2>
+        </div>
+    </div>
+
+    <nav class="category-filter" aria-label="{{ t.category }}">
+        <a class="{% if not selected_category %}active{% endif %}" href="/#services">{{ t.all_services }}</a>
+        {% for category in service_categories %}
+            <a class="{% if selected_category == category %}active{% endif %}" href="/?category={{ category }}#services">{{ t[category] }}</a>
+        {% endfor %}
+    </nav>
+
+    <div class="service-grid">
+        {% for service in services %}
+            <article class="service-card">
+                <div>
+                    <span class="card-kicker">{{ t[service.category] }} · {{ service.duration }} минут</span>
+                    <h3>{{ service.name }}</h3>
+                    <p>{{ service.description }}</p>
+                </div>
+                <a class="button primary" href="/book/{{ service.id }}">{{ t.book }}</a>
+            </article>
+        {% else %}
+            <p class="empty-state">{{ t.no_services }}</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

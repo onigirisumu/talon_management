@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Проверка статуса{% endblock %}
+
+{% block content %}
+<section class="container page-head">
+    <div>
+        <h1>{{ t.check_ticket_title }}</h1>
+    </div>
+</section>
+
+<section class="container two-column">
+    <form class="form-card" method="post" action="/status">
+        <label for="ticket-number">{{ t.ticket_number }}</label>
+        <div class="inline-row">
+            <input id="ticket-number" name="ticket_number" type="text" value="{{ ticket }}" required>
+            <button type="submit">{{ t.check }}</button>
+        </div>
+        <div class="notice-card compact-notice">
+            <h2>{{ t.client_notice_title }}</h2>
+            <p>{{ t.client_notice_intro }}</p>
+            <p>{{ t.client_notice_booking }}</p>
+            <ul>
+                <li>{{ t.client_notice_arrive }}</li>
+                <li>{{ t.client_notice_document }}</li>
+            </ul>
+        </div>
+    </form>
+
+    <aside class="result-card">
+        {% if appointment %}
+            <h2>{{ t.details }}</h2>
+            <dl class="detail-list">
+                <div>
+                    <dt>{{ t.status }}</dt>
+                    <dd><span class="status status-{{ appointment.status }}">{{ appointment.status_label }}</span></dd>
+                </div>
+                <div>
+                    <dt>{{ t.service }}</dt>
+                    <dd>{{ appointment.service.name }}</dd>
+                </div>
+                <div>
+                    <dt>{{ t.date_time }}</dt>
+                    <dd>{{ appointment.date|date_ru }}, {{ appointment.time_slot.start_time }}</dd>
+                </div>
+                <div>
+                    <dt>{{ t.full_name }}</dt>
+                    <dd>{{ appointment.full_name }}</dd>
+                </div>
+            </dl>
+            <div class="form-actions">
+                <a class="button secondary" href="/ticket/{{ appointment.ticket_number }}">{{ t.download_pdf }}</a>
+                <a class="button secondary" href="/appointments/{{ appointment.id }}/reschedule">{{ t.reschedule }}</a>
+            </div>
+        {% elif not_found %}
+            <div class="alert error">{{ t.ticket_not_found }}</div>
+        {% else %}
+            <p class="muted">{{ t.enter_ticket }}</p>
+        {% endif %}
+    </aside>
+</section>
+{% endblock %}

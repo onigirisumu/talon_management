@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<section class="container auth-layout">
+    {% if auth_mode == "signup" %}
+        <form class="auth-card" method="post" action="/register">
+            <h1>{{ t.signup_title }}</h1>
+            {% if register_error %}
+                <div class="alert error">{{ register_error }}</div>
+            {% endif %}
+            {% if register_message %}
+                <div class="alert success">{{ register_message }}</div>
+            {% endif %}
+            <input type="hidden" name="next_url" value="{{ next_url }}">
+
+            <fieldset class="choice-field">
+                <legend>{{ t.register_method }}</legend>
+                <div class="choice-row">
+                    <label>
+                        <input
+                            type="radio"
+                            name="register_method"
+                            value="phone"
+                            {% if form_data.register_method != "email" %}checked{% endif %}
+                        >
+                        {{ t.phone }}
+                    </label>
+                    <label>
+                        <input
+                            type="radio"
+                            name="register_method"
+                            value="email"
+                            {% if form_data.register_method == "email" %}checked{% endif %}
+                        >
+                        {{ t.email }}
+                    </label>
+                </div>
+            </fieldset>
+
+            <label for="full-name">{{ t.full_name }}
+                <input
+                    id="full-name"
+                    name="full_name"
+                    type="text"
+                    required
+                    autocomplete="name"
+                    value="{{ form_data.full_name or '' }}"
+                >
+            </label>
+            <label for="contact">{{ t.phone }} / {{ t.email }}
+                <input
+                    id="contact"
+                    name="contact"
+                    type="text"
+                    required
+                    autocomplete="email"
+                    value="{{ form_data.contact or '' }}"
+                >
+            </label>
+            <label for="iin">{{ t.iin }}
+                <input
+                    id="iin"
+                    name="iin"
+                    type="text"
+                    maxlength="12"
+                    inputmode="numeric"
+                    value="{{ form_data.iin or '' }}"
+                >
+            </label>
+            <label for="reg-password">{{ t.password }}
+                <input
+                    id="reg-password"
+                    name="password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                >
+            </label>
+            <label for="reg-confirm-password">{{ t.confirm_password }}
+                <input
+                    id="reg-confirm-password"
+                    name="confirm_password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                >
+            </label>
+            <button type="submit">{{ t.signup }}</button>
+            <div class="auth-switch">
+                <span>{{ t.already_account }}</span>
+                <a href="/login?mode=signin{% if next_param %}&next={{ next_param }}{% endif %}">{{ t.sign_in }}</a>
+            </div>
+        </form>
+    {% else %}
+        <form class="auth-card" method="post" action="/login">
+            <h1>{{ t.login_title }}</h1>
+            {% if error %}
+                <div class="alert error">{{ error }}</div>
+            {% endif %}
+            <input type="hidden" name="next_url" value="{{ next_url }}">
+            <label for="identifier">{{ t.identifier }}
+                <input
+                    id="identifier"
+                    name="identifier"
+                    type="text"
+                    required
+                    autofocus
+                    autocomplete="username"
+                    value="{{ form_data.identifier or '' }}"
+                >
+            </label>
+            <label for="password">{{ t.password }}
+                <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autocomplete="current-password"
+                >
+            </label>
+            <button type="submit">{{ t.sign_in }}</button>
+            <div class="auth-switch">
+                <span>{{ t.no_account }}</span>
+                <a href="/login?mode=signup{% if next_param %}&next={{ next_param }}{% endif %}">{{ t.signup }}</a>
+            </div>
+        </form>
+    {% endif %}
+</section>
+{% endblock %}

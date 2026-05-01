@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.reschedule_title }}{% endblock %}
+
+{% block content %}
+<section class="container page-head">
+    <div>
+        <h1>{{ t.reschedule_title }}</h1>
+        <p class="page-lead">{{ appointment.ticket_number }} · {{ appointment.service.name }}</p>
+    </div>
+    <a class="button secondary" href="/cabinet">{{ t.nav_cabinet }}</a>
+</section>
+
+<section class="container form-layout">
+    <div class="form-card">
+        {% if error %}
+            <div class="alert error">{{ error }}</div>
+        {% endif %}
+
+        <div class="account-summary">
+            <h2>{{ t.details }}</h2>
+            <dl class="detail-list">
+                <div>
+                    <dt>{{ t.date_time }}</dt>
+                    <dd>{{ appointment.date|date_ru }}, {{ appointment.time_slot.start_time }}</dd>
+                </div>
+                <div>
+                    <dt>{{ t.status }}</dt>
+                    <dd><span class="status status-{{ appointment.status }}">{{ appointment.status_label }}</span></dd>
+                </div>
+            </dl>
+        </div>
+
+        <form class="date-filter" method="get" action="/appointments/{{ appointment.id }}/reschedule">
+            <label for="selected-date">{{ t.appointment_date }}</label>
+            <div class="inline-row">
+                <select id="selected-date" name="selected_date">
+                    {% for slot_date in dates %}
+                        <option value="{{ slot_date }}" {% if slot_date == selected_date %}selected{% endif %}>
+                            {{ slot_date|date_ru }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">{{ t.show_time }}</button>
+            </div>
+        </form>
+
+        <form method="post" action="/appointments/{{ appointment.id }}/reschedule">
+            <input type="hidden" name="appointment_date" value="{{ selected_date }}">
+            <fieldset>
+                <legend>{{ t.choose_new_time }}</legend>
+                <div class="slot-grid">
+                    {% for slot in slots %}
+                        <label class="slot-option">
+                            <input type="radio" name="time_slot_id" value="{{ slot.id }}" required>
+                            <span>{{ slot.start_time }}-{{ slot.end_time }}</span>
+                        </label>
+                    {% else %}
+                        <p class="empty-state">{{ t.no_slots }}</p>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            <div class="form-actions">
+                <button type="submit" {% if not slots %}disabled{% endif %}>{{ t.save_reschedule }}</button>
+                <a class="button ghost" href="/cabinet">{{ t.cancel }}</a>
+            </div>
+        </form>
+    </div>
+
+    <aside class="side-panel">
+        <h2>{{ t.client_notice_title }}</h2>
+        <p>{{ t.client_notice_intro }}</p>
+        <p>{{ t.client_notice_booking }}</p>
+        <ol class="step-list">
+            <li>{{ t.client_notice_arrive }}</li>
+            <li>{{ t.client_notice_document }}</li>
+        </ol>
+    </aside>
+</section>
+{% endblock %}

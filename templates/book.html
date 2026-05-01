@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Запись | {{ service.name }}{% endblock %}
+
+{% block content %}
+<section class="container page-head">
+    <div>
+        <h1>{{ service.name }}</h1>
+        <p class="page-lead">{{ service.description }}</p>
+    </div>
+    <a class="button secondary" href="/">{{ t.back_to_services }}</a>
+</section>
+
+<section class="container form-layout">
+    <div class="form-card">
+        {% if error %}
+            <div class="alert error">{{ error }}</div>
+        {% endif %}
+
+        <form class="date-filter" method="get" action="/book/{{ service.id }}">
+            <label for="selected-date">{{ t.appointment_date }}</label>
+            <div class="inline-row">
+                <select id="selected-date" name="selected_date">
+                    {% for slot_date in dates %}
+                        <option value="{{ slot_date }}" {% if slot_date == selected_date %}selected{% endif %}>
+                            {{ slot_date|date_ru }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <button type="submit">{{ t.show_time }}</button>
+            </div>
+        </form>
+
+        <form method="post" action="/book/{{ service.id }}">
+            <input type="hidden" name="appointment_date" value="{{ selected_date }}">
+
+            <fieldset>
+                <legend>{{ t.free_time }}</legend>
+                <div class="slot-grid">
+                    {% for slot in slots %}
+                        <label class="slot-option">
+                            <input type="radio" name="time_slot_id" value="{{ slot.id }}" required>
+                            <span>{{ slot.start_time }}-{{ slot.end_time }}</span>
+                        </label>
+                    {% else %}
+                        <p class="empty-state">{{ t.no_slots }}</p>
+                    {% endfor %}
+                </div>
+            </fieldset>
+
+            <div class="account-summary">
+                <h2>{{ t.account_data }}</h2>
+                <dl class="detail-list">
+                    <div>
+                        <dt>{{ t.full_name }}</dt>
+                        <dd>{{ citizen.full_name }}</dd>
+                    </div>
+                    <div>
+                        <dt>{{ t.iin }}</dt>
+                        <dd>{{ citizen.iin or t.not_specified }}</dd>
+                    </div>
+                    <div>
+                        <dt>{{ t.phone }}</dt>
+                        <dd>{{ citizen.phone or t.not_specified }}</dd>
+                    </div>
+                    <div>
+                        <dt>{{ t.email }}</dt>
+                        <dd>{{ citizen.email or t.not_specified }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <div class="field-grid">
+                <div class="field field-wide">
+                    <label for="comment">{{ t.comment }}</label>
+                    <textarea id="comment" name="comment" rows="4"></textarea>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" {% if not slots %}disabled{% endif %}>{{ t.get_ticket }}</button>
+                <a class="button ghost" href="/">{{ t.cancel }}</a>
+            </div>
+        </form>
+    </div>
+
+    <aside class="side-panel">
+        <h2>{{ t.next_steps }}</h2>
+        <ol class="step-list">
+            <li>{{ t.step_slot }}</li>
+            <li>{{ t.step_account }}</li>
+            <li>{{ t.step_ticket }}</li>
+            <li>{{ t.step_status }}</li>
+        </ol>
+    </aside>
+</section>
+{% endblock %}
